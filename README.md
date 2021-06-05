@@ -29,7 +29,7 @@ $ npm install -S https://github.com/PavelIgnatev/eslint-plugin-lodash-to-native.
 ```json
 {
   "rules": {
-    "lodash-to-native/map": 1
+    "lodash-to-native/map": "warn"
   }
 }
 ```
