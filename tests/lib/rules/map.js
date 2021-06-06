@@ -28,7 +28,9 @@ ruleTester.run('map', rule, {
     'Array.isArray(variable) ? variable.map(() => {}) : _.map(variable, () => {})',
     //После присваиная не отрабатывает
     `_ = {map: () => []};
-    false ? true : _.map(variable, () => {})`
+    false ? true : _.map(variable, () => {})`,
+    //require
+    'const _ = require("lodash")'
     
   ],
 
@@ -55,7 +57,7 @@ ruleTester.run('map', rule, {
       }, 
     {
         code: '_.map(variable, () => {})',
-        output: "Array.isArray(variable) ? variable.map(() => {}) : _.map(variable, () => {})",
+        output: "(Array.isArray(variable) ? variable.map(() => {}) : _.map(variable, () => {}))",
         errors: [
           {
             message: 'Замените использование _.map на нативное Array#map, если первый параметр массив',
@@ -65,7 +67,7 @@ ruleTester.run('map', rule, {
       }, 
       {
         code: 'false ? true : _.map(variable, () => {})',
-        output: "false ? true : Array.isArray(variable) ? variable.map(() => {}) : _.map(variable, () => {})",
+        output: "false ? true : (Array.isArray(variable) ? variable.map(() => {}) : _.map(variable, () => {}))",
         errors: [
           {
             message: 'Замените использование _.map на нативное Array#map, если первый параметр массив',
@@ -76,7 +78,7 @@ ruleTester.run('map', rule, {
         code: `false ? true : _.map(variable, () => {});
         _ = {map: () => []};
         false ? true : _.map(variable, () => {})`,
-        output: `false ? true : Array.isArray(variable) ? variable.map(() => {}) : _.map(variable, () => {});
+        output: `false ? true : (Array.isArray(variable) ? variable.map(() => {}) : _.map(variable, () => {}));
         _ = {map: () => []};
         false ? true : _.map(variable, () => {})`,
         errors: [
@@ -85,6 +87,27 @@ ruleTester.run('map', rule, {
           }
         ]
       }, 
+      {
+        code: '_.map(variable, (n) => n * n).map((n) => n * n);',
+        output: '(Array.isArray(variable) ? variable.map((n) => n * n) : _.map(variable, (n) => n * n)).map((n) => n * n);',
+        errors: [
+          {
+            message: 'Замените использование _.map на нативное Array#map, если первый параметр массив',
+          }
+        ]
+      }, 
+      {
+        code: `const _ = require("lodash");
+        _.map(variable, (n) => n * n).map((n) => n * n);`,
+        output: `const _ = require("lodash");
+        (Array.isArray(variable) ? variable.map((n) => n * n) : _.map(variable, (n) => n * n)).map((n) => n * n);`,
+        errors: [
+          {
+            message: 'Замените использование _.map на нативное Array#map, если первый параметр массив',
+          }
+        ]
+      }
+      
 
 
 
